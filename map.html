@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Places</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+    <main class="wrap">
+        <header class="head">
+            <h1>Video Places</h1>
+            <p class="sub">Step 1 &mdash; choose a video</p>
+        </header>
+
+        <section class="panel">
+            <form id="video-form" novalidate>
+                <label for="video-url">YouTube URL or video ID</label>
+                <div class="row">
+                    <input id="video-url" type="text" autocomplete="off" spellcheck="false"
+                           value="https://www.youtube.com/watch?v=d4hSykAvpi0">
+                    <button type="submit">Load</button>
+                </div>
+                <p id="error" class="error" hidden></p>
+            </form>
+
+            <div id="result" class="result" hidden>
+                <img id="thumb" class="thumb" alt="">
+                <dl class="meta">
+                    <dt>Video ID</dt>
+                    <dd id="out-id"></dd>
+                    <dt>Canonical URL</dt>
+                    <dd><a id="out-link" target="_blank" rel="noopener noreferrer"></a></dd>
+                </dl>
+            </div>
+        </section>
+
+        <section id="next" class="panel next" hidden>
+            <h2>Next step</h2>
+            <p>Location extraction is not built yet. The video ID above is the input it will take.</p>
+        </section>
+    </main>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

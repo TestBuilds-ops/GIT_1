@@ -1,0 +1,132 @@
+:root {
+    color-scheme: light dark;
+    --bg: #f7f7f5;
+    --panel: #ffffff;
+    --text: #1b1b1a;
+    --muted: #6b6b66;
+    --line: #e2e2dd;
+    --accent: #2f6f4f;
+    --on-accent: #ffffff;
+    --error: #b3261e;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #17181a;
+        --panel: #202225;
+        --text: #ececea;
+        --muted: #9a9a95;
+        --line: #32343a;
+        --accent: #6fbf8f;
+        --on-accent: #10231a;
+        --error: #ef9a93;
+    }
+}
+
+[hidden] { display: none !important; }
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px 20px 64px;
+}
+
+.head h1 { font-size: 24px; }
+.sub { margin-top: 4px; font-size: 13px; color: var(--muted); }
+
+.panel {
+    margin-top: 20px;
+    padding: 20px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+input[type="text"] {
+    flex: 1 1 260px;
+    min-width: 0;
+    padding: 10px 12px;
+    font: inherit;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 7px;
+}
+
+input[type="text"]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+}
+
+button {
+    padding: 10px 18px;
+    font: inherit;
+    font-weight: 600;
+    color: var(--on-accent);
+    background: var(--accent);
+    border: 0;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.error {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--error);
+}
+
+.result {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+}
+
+.thumb {
+    width: 200px;
+    max-width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background: var(--line);
+    border-radius: 7px;
+}
+
+.meta {
+    flex: 1 1 200px;
+    min-width: 0;
+    align-content: start;
+}
+
+.meta dt {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+}
+
+.meta dd {
+    margin-bottom: 12px;
+    overflow-wrap: anywhere;
+}
+
+.meta a { color: var(--accent); }
+
+.next h2 { margin-bottom: 6px; font-size: 15px; }
+.next p { font-size: 13px; color: var(--muted); }
