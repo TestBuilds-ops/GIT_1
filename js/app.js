@@ -31,11 +31,57 @@ function parseVideoId(raw) {
     return null;
 }
 
+const tbody = document.getElementById("places-body");
+
+for (const place of PLACES) {
+    const row = document.createElement("tr");
+    row.dataset.id = place.id;
+
+    const columns = [
+        ["cell-name", place.name],
+        ["cell-quote", place.quote],
+        ["tag", place.source],
+        ["cell-coord", place.lat],
+        ["cell-coord", place.lon],
+        ["cell-addr", place.address]
+    ];
+
+    for (const [kind, text] of columns) {
+        const cell = document.createElement("td");
+        if (kind === "tag") {
+            const tag = document.createElement("span");
+            tag.className = "tag " + text;
+            tag.textContent = text;
+            cell.appendChild(tag);
+        } else {
+            cell.className = kind;
+            cell.textContent = text;
+        }
+        row.appendChild(cell);
+    }
+
+    tbody.appendChild(row);
+}
+
+const linked = [...document.querySelectorAll(".pin"), ...tbody.querySelectorAll("tr")];
+
+function highlight(id, on) {
+    for (const el of linked) {
+        if (el.dataset.id === id) el.classList.toggle("on", on);
+    }
+}
+
+for (const el of linked) {
+    el.addEventListener("mouseenter", () => highlight(el.dataset.id, true));
+    el.addEventListener("mouseleave", () => highlight(el.dataset.id, false));
+    el.addEventListener("focus", () => highlight(el.dataset.id, true));
+    el.addEventListener("blur", () => highlight(el.dataset.id, false));
+}
+
 const form = document.getElementById("video-form");
 const input = document.getElementById("video-url");
 const error = document.getElementById("error");
 const result = document.getElementById("result");
-const next = document.getElementById("next");
 const thumb = document.getElementById("thumb");
 const outId = document.getElementById("out-id");
 const outLink = document.getElementById("out-link");
@@ -48,7 +94,6 @@ form.addEventListener("submit", (event) => {
         error.textContent = "That is not a YouTube video URL or an 11-character video ID.";
         error.hidden = false;
         result.hidden = true;
-        next.hidden = true;
         return;
     }
 
@@ -61,7 +106,6 @@ form.addEventListener("submit", (event) => {
 
     error.hidden = true;
     result.hidden = false;
-    next.hidden = false;
 });
 
 form.requestSubmit();
