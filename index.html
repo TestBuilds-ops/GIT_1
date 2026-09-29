@@ -3,11 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GIT_1</title>
+    <title>Video Atlas</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Spectral:ital@1&display=swap">
     <link rel="stylesheet" href="css/style.css">
-
+    <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-    <h1>lets learn git</h1>
+    <main class="wrap">
+        <header class="masthead">
+            <p class="eyebrow">One video, charted</p>
+            <h1>Video Atlas</h1>
+            <p class="standfirst">Places pulled out of a single YouTube video, geocoded, and put on a map with their addresses.</p>
+        </header>
+
+        <section class="panel primary">
+            <form id="video-form" novalidate>
+                <label for="video-url">YouTube URL or video ID</label>
+                <div class="row">
+                    <input id="video-url" type="text" autocomplete="off" spellcheck="false"
+                           value="https://www.youtube.com/watch?v=d4hSykAvpi0">
+                    <button type="submit">Load</button>
+                </div>
+                <p id="error" class="error" role="status" hidden></p>
+            </form>
+
+            <div id="result" class="result" hidden>
+                <div class="inset"><img id="thumb" alt=""></div>
+                <dl class="meta">
+                    <dt>Video ID</dt>
+                    <dd id="out-id"></dd>
+                    <dt>Canonical URL</dt>
+                    <dd><a id="out-link" target="_blank" rel="noopener noreferrer"></a></dd>
+                </dl>
+            </div>
+        </section>
+
+        <section class="panel caution">
+            <h2>What the source actually yielded</h2>
+            <p>This video is a 30-second trailer and publishes no caption track, so there is no transcript to mine.
+               Every place below comes from the video's own description, which names a route rather than a list of
+               stops: Normandy in the north, the Atlantic coast, and the Spanish border.</p>
+        </section>
+
+        <section class="panel">
+            <div class="legend">
+                <h2>The route</h2>
+                <span>Normandy south to the Spanish border</span>
+            </div>
+            <div class="chart-row">
+                <figure class="chart-figure">
+                    <svg viewBox="0 0 560 620" role="img" aria-label="Map of France showing three located places along the Atlantic coast, from Normandy in the north to the Spanish border in the south.">
+                        <path class="coast" d="M26 206.7L33.2 232.2L69.8 253.2L85.3 254.8L95.8 270.8L111.5 271L117.9 274.6L119.1 294.9L139.3 307.8L149.7 322.2L159.2 350.9L155.8 401.7L150.1 435.7L147.3 440.3L147.7 452L153.8 456.9L161.4 457L159.3 466.8L162.2 467.7L163 463.8L165 463.3L163.7 465.7L169.3 468.6L182.3 470.6L188.4 479.6L196.8 476.3L206.7 484.2L213.1 481.7L217.1 484.7L229.7 483.9L230.8 475.7L246 483L252.4 482.5L255.1 488.2L265 487.5L266.6 489.5L264.8 493.5L271.6 495.4L274.3 500.5L282.3 496.1L296.1 500.8L296.2 497.7L305.2 494L321.9 496.2L317.3 484.8L318.3 470L340.1 454.4L371.4 462.9L398.3 475.8L421.1 479.2L430.4 473.8L439.1 458.1L456.6 444.1L454.3 432.9L457.7 443.1L461 441.1L456.4 427.3L463.7 417.8L462.7 412.4L451.9 415.2L440.3 409.5L435.1 395.3L438.7 388.1L442.5 388L440.8 381.1L431.7 377.1L431.6 371.8L427.6 367.5L442.6 362.3L446.2 353.1L440 348.3L440 341.8L433.6 337.6L433.9 332.3L441.5 328.1L435.7 321.9L436.6 318.4L433.2 317.7L435.5 310.9L432.4 307.3L434 303.8L417.9 304.9L414 309.4L416.5 313.5L405.3 318L412.4 306.7L408.8 304.3L411.9 298.1L410.4 296.6L421.8 287.1L421.1 279.6L430.6 273.7L441.9 260.1L436 259.2L439.4 252.3L452.8 255.4L459.4 248.4L457 242.5L460.6 229.3L459.2 222.1L464.7 212.2L467.9 197.1L481 181.4L461 177.1L454.8 170.9L449.7 174.2L441.7 174.3L437.9 169L431.3 171.9L424.7 158.9L414.7 154.9L408.1 158.2L399.2 152.6L388.9 155.7L382.4 146.2L368.6 141.5L369.8 135.9L366.5 133L370.1 124.9L367.7 123.4L362.8 128.3L363.3 131.8L346.8 133.7L344.7 130.6L347.9 128L344.5 125L347.2 118.4L341 114.2L330.6 116.9L327.2 107.6L316.6 106.2L315.7 97.7L312 93.5L303.9 98.2L300 96.6L293.7 90.6L294.8 85.9L286 68.6L270.1 73.7L252.3 85.8L249.9 88.4L246 120.9L207.7 137.7L202.1 143.3L199.2 153.9L178.7 151.4L173.7 140.5L166.7 136.1L138.9 135.4L136.1 153.7L146.3 167.7L141.3 185.4L123.2 183.3L122.1 169.2L109.7 165.1L102.3 174.1L82.7 176.4L32.1 196.2L26 206.7Z"></path>
+                        <path class="coast" d="M482 499.5L484.1 526.1L497.5 550.8L515.4 551.4L527.4 544.5L528.8 523.8L533.4 514.6L534 504.6L531.9 478.2L526 460.5L519.1 458.1L512 461.7L507.7 472.8L490.1 482.9L482 499.5Z"></path>
+                        <polyline class="track" points="217.7,176.5 85.6,342.9 148.7,451.5"></polyline>
+                        <g class="pin" data-id="normandy" tabindex="0" role="button" aria-label="Normandy">
+                            <circle class="halo" cx="217.7" cy="176.5" r="26"></circle>
+                            <circle class="dot" cx="217.7" cy="176.5" r="9"></circle>
+                            <text x="238" y="183">Normandy</text>
+                        </g>
+                        <g class="pin" data-id="atlantic" tabindex="0" role="button" aria-label="French Atlantic coast">
+                            <circle class="halo" cx="85.6" cy="342.9" r="26"></circle>
+                            <circle class="dot" cx="85.6" cy="342.9" r="9"></circle>
+                            <text x="12" y="318">Atlantic</text>
+                        </g>
+                        <g class="pin inferred" data-id="border" tabindex="0" role="button" aria-label="Spanish border at Hendaye">
+                            <circle class="halo" cx="148.7" cy="451.5" r="26"></circle>
+                            <circle class="dot" cx="148.7" cy="451.5" r="9"></circle>
+                            <text x="92" y="492">Spanish border</text>
+                        </g>
+                    </svg>
+                </figure>
+                <div class="chart-side">
+                    <ul class="key">
+                        <li><i class="solid"></i> Named outright in the description</li>
+                        <li><i class="hollow"></i> Inferred from a phrase, not named</li>
+                        <li><i class="dash"></i> The journey the description describes</li>
+                    </ul>
+                    <p class="colophon">Coastline from OpenStreetMap boundary geometry, projected at build time &mdash;
+                       no tile server needed. Hover a pin to highlight its row.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="legend">
+                <h2>Places</h2>
+                <span>three located, with geocoded addresses</span>
+            </div>
+            <div class="scroller">
+                <table>
+                    <caption>Addresses and coordinates resolved through OpenStreetMap's Nominatim geocoder.</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Place</th>
+                            <th scope="col">As it appears</th>
+                            <th scope="col">Source</th>
+                            <th scope="col">Latitude</th>
+                            <th scope="col">Longitude</th>
+                            <th scope="col">Geocoded address</th>
+                        </tr>
+                    </thead>
+                    <tbody id="places-body"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/places.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
