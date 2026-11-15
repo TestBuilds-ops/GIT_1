@@ -299,12 +299,12 @@ form.addEventListener("submit", async (event) => {
         if (!link.url && !link.place) return;
         const parsed = parseInstagram(link.url);
         if (!parsed) {
-            problems.push("Link " + (i + 1) + " isn't an Instagram post, reel, profile or location link.");
+            problems.push("Instagram address " + (i + 1) + " isn't a post, reel, profile or location address.");
             return;
         }
         const name = link.place || parsed.place;
         if (!name) {
-            problems.push("Link " + (i + 1) + " is a " + parsed.kind +
+            problems.push("Instagram address " + (i + 1) + " is a " + parsed.kind +
                 ", which doesn't say where it is. Type the place name next to it.");
             return;
         }

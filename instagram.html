@@ -15,7 +15,7 @@
         <header class="masthead">
             <p class="eyebrow">Instagram, charted from your hotel</p>
             <h1>Stay Map</h1>
-            <p class="standfirst">Paste Instagram links for the places you want to visit, add your hotel, and see them all on a map centred on where you're staying.</p>
+            <p class="standfirst">Paste Instagram addresses for the places you want to visit, add your hotel, and see them all on a map centred on where you're staying.</p>
             <nav class="crosslink"><a href="./">&larr; Video Atlas</a></nav>
         </header>
 
@@ -28,11 +28,11 @@
                 </div>
 
                 <fieldset class="links">
-                    <legend>Instagram links</legend>
-                    <p class="hint">A location link (<code>instagram.com/explore/locations/&hellip;</code>) names its place by itself.
-                       A post, reel or profile link doesn't carry a location, so type the place it shows.</p>
+                    <legend>Instagram address</legend>
+                    <p class="hint">A location address (<code>instagram.com/explore/locations/&hellip;</code>) names its place by itself.
+                       A post, reel or profile address doesn't carry a location, so type the place it shows.</p>
                     <ol id="link-rows"></ol>
-                    <button type="button" id="add-row" class="ghost">+ Add another link</button>
+                    <button type="button" id="add-row" class="ghost">+ Add another Instagram address</button>
                 </fieldset>
 
                 <div class="row actions">
@@ -51,7 +51,7 @@
             <div id="map" class="map" role="region" aria-label="Map of the hotel and Instagram places"></div>
             <ul class="key">
                 <li><i class="hotel-key"></i> Hotel</li>
-                <li><i class="solid"></i> Place from an Instagram link (numbered as listed)</li>
+                <li><i class="solid"></i> Place from an Instagram address (numbered as listed)</li>
             </ul>
         </section>
 
@@ -67,7 +67,7 @@
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Place</th>
-                            <th scope="col">Instagram link</th>
+                            <th scope="col">Instagram address</th>
                             <th scope="col">From hotel</th>
                             <th scope="col">Geocoded address</th>
                         </tr>
@@ -81,10 +81,10 @@
     <template id="row-template">
         <li class="link-row">
             <input class="field ig-url" type="url" autocomplete="off" spellcheck="false"
-                   placeholder="https://www.instagram.com/…" aria-label="Instagram link">
+                   placeholder="Instagram address" aria-label="Instagram address">
             <input class="field ig-place" type="text" autocomplete="off"
                    placeholder="Place name (needed for posts and reels)" aria-label="Place name">
-            <button type="button" class="ghost remove" aria-label="Remove this link">&times;</button>
+            <button type="button" class="ghost remove" aria-label="Remove this Instagram address">&times;</button>
         </li>
     </template>
 
