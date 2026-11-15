@@ -1,0 +1,84 @@
+.field {
+    flex: 1 1 240px;
+    min-width: 0;
+    padding: 11px 13px;
+    font: 400 14px/1.4 "IBM Plex Mono", ui-monospace, monospace;
+    color: var(--ink);
+    background: var(--sea);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+}
+
+.field:focus-visible {
+    outline: 2px solid var(--magenta);
+    outline-offset: 1px;
+    border-color: transparent;
+}
+
+.links { border: 0; margin-top: 22px; }
+.links legend {
+    margin-bottom: 9px;
+    font: 500 11px/1 "IBM Plex Mono", ui-monospace, monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--depth);
+}
+
+.hint { max-width: 66ch; margin-bottom: 12px; font-size: 13px; color: var(--depth); }
+.hint code { font: 400 12px "IBM Plex Mono", ui-monospace, monospace; overflow-wrap: anywhere; }
+
+#link-rows { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.link-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.link-row .ig-url { flex: 2 1 260px; }
+.link-row .ig-place { flex: 1 1 200px; }
+
+button.ghost {
+    color: var(--magenta);
+    background: transparent;
+    border: 1px solid var(--line);
+}
+button.ghost:hover { filter: none; border-color: var(--magenta); }
+.link-row .remove { padding: 0 15px; font-size: 18px; }
+
+button:disabled { opacity: 0.55; cursor: progress; }
+
+.actions { align-items: center; margin-top: 22px; }
+.status { font-size: 13px; color: var(--depth); }
+
+.map {
+    height: min(70vh, 520px);
+    margin-bottom: 15px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: var(--sea);
+}
+
+.pin-icon span {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font: 600 12px/1 "IBM Plex Mono", ui-monospace, monospace;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+.pin-icon.place span { background: var(--magenta); color: var(--on-magenta); border: 2px solid #fff; }
+.pin-icon.hotel span { background: #14282f; color: #fff; border: 3px solid var(--amber); border-radius: 6px; }
+
+.spoke { stroke: var(--magenta); stroke-width: 1.5; stroke-dasharray: 5 5; opacity: 0.6; }
+
+.leaflet-container { font: 400 13px/1.4 Archivo, system-ui, sans-serif; }
+.recentre {
+    padding: 7px 11px;
+    font: 600 12px/1 Archivo, system-ui, sans-serif;
+    color: #14282f;
+    background: #fff;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.key .hotel-key { background: #14282f; border: 2px solid var(--amber); border-radius: 3px; }
+.key { flex-direction: row; flex-wrap: wrap; gap: 7px 20px; }
+
+td a { color: var(--magenta); text-underline-offset: 2px; }
+.cell-addr.missing { color: var(--amber); font-style: italic; }

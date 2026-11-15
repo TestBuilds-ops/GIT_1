@@ -79,6 +79,12 @@ h1 {
     color: var(--depth);
 }
 
+.crosslink a {
+    font: 500 12px/1 "IBM Plex Mono", ui-monospace, monospace;
+    color: var(--magenta);
+    text-underline-offset: 2px;
+}
+
 .panel {
     background: var(--paper);
     border: 1px solid var(--line);

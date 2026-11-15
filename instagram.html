@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stay Map</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Spectral:ital@1&display=swap">
+    <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/instagram.css">
+</head>
+<body>
+    <main class="wrap">
+        <header class="masthead">
+            <p class="eyebrow">Instagram, charted from your hotel</p>
+            <h1>Stay Map</h1>
+            <p class="standfirst">Paste Instagram links for the places you want to visit, add your hotel, and see them all on a map centred on where you're staying.</p>
+            <nav class="crosslink"><a href="./">&larr; Video Atlas</a></nav>
+        </header>
+
+        <section class="panel primary">
+            <form id="stay-form" novalidate>
+                <label for="hotel">Hotel name or address</label>
+                <div class="row">
+                    <input id="hotel" class="field" type="text" autocomplete="off"
+                           placeholder="e.g. Hotel Lutetia, Paris">
+                </div>
+
+                <fieldset class="links">
+                    <legend>Instagram links</legend>
+                    <p class="hint">A location link (<code>instagram.com/explore/locations/&hellip;</code>) names its place by itself.
+                       A post, reel or profile link doesn't carry a location, so type the place it shows.</p>
+                    <ol id="link-rows"></ol>
+                    <button type="button" id="add-row" class="ghost">+ Add another link</button>
+                </fieldset>
+
+                <div class="row actions">
+                    <button type="submit" id="plot">Plot on map</button>
+                    <p id="status" class="status" role="status"></p>
+                </div>
+                <p id="error" class="error" role="alert" hidden></p>
+            </form>
+        </section>
+
+        <section class="panel" id="map-panel" hidden>
+            <div class="legend">
+                <h2>Map</h2>
+                <span>always centred on the hotel</span>
+            </div>
+            <div id="map" class="map" role="region" aria-label="Map of the hotel and Instagram places"></div>
+            <ul class="key">
+                <li><i class="hotel-key"></i> Hotel</li>
+                <li><i class="solid"></i> Place from an Instagram link (numbered as listed)</li>
+            </ul>
+        </section>
+
+        <section class="panel" id="table-panel" hidden>
+            <div class="legend">
+                <h2>Places</h2>
+                <span>distance is straight-line from the hotel</span>
+            </div>
+            <div class="scroller">
+                <table>
+                    <caption>Addresses and coordinates resolved through OpenStreetMap's Nominatim geocoder.</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Place</th>
+                            <th scope="col">Instagram link</th>
+                            <th scope="col">From hotel</th>
+                            <th scope="col">Geocoded address</th>
+                        </tr>
+                    </thead>
+                    <tbody id="places-body"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <template id="row-template">
+        <li class="link-row">
+            <input class="field ig-url" type="url" autocomplete="off" spellcheck="false"
+                   placeholder="https://www.instagram.com/…" aria-label="Instagram link">
+            <input class="field ig-place" type="text" autocomplete="off"
+                   placeholder="Place name (needed for posts and reels)" aria-label="Place name">
+            <button type="button" class="ghost remove" aria-label="Remove this link">&times;</button>
+        </li>
+    </template>
+
+    <script src="vendor/leaflet/leaflet.js"></script>
+    <script src="js/instagram.js"></script>
+</body>
+</html>
