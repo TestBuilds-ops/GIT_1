@@ -3,6 +3,8 @@
 // the only source text available. Coordinates and addresses come from
 // OpenStreetMap Nominatim. "source" records whether the video named the place
 // outright or whether it was inferred from a phrase.
+const PLACES_VIDEO_ID = "d4hSykAvpi0";
+
 const PLACES = [
     {
         id: "normandy",

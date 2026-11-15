@@ -38,14 +38,22 @@
             </div>
         </section>
 
-        <section class="panel caution">
+        <section id="not-charted" class="panel caution" hidden>
+            <h2>This video hasn't been charted</h2>
+            <p>The map and places table are built ahead of time for one video:
+               <a href="https://www.youtube.com/watch?v=d4hSykAvpi0">d4hSykAvpi0</a>.
+               This page has no server, so it can't read a new video's transcript or description and geocode its
+               places on the fly. The video above was recognised, but there are no places to show for it yet.</p>
+        </section>
+
+        <section class="panel caution charted">
             <h2>What the source actually yielded</h2>
             <p>This video is a 30-second trailer and publishes no caption track, so there is no transcript to mine.
                Every place below comes from the video's own description, which names a route rather than a list of
                stops: Normandy in the north, the Atlantic coast, and the Spanish border.</p>
         </section>
 
-        <section class="panel">
+        <section class="panel charted">
             <div class="legend">
                 <h2>The route</h2>
                 <span>Normandy south to the Spanish border</span>
@@ -85,7 +93,7 @@
             </div>
         </section>
 
-        <section class="panel">
+        <section class="panel charted">
             <div class="legend">
                 <h2>Places</h2>
                 <span>three located, with geocoded addresses</span>

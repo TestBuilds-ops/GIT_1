@@ -1,5 +1,6 @@
 const VIDEO_ID = /^[A-Za-z0-9_-]{11}$/;
 const PATH_PREFIXES = ["embed", "shorts", "v", "live"];
+const YOUTUBE_HOSTS = ["youtube.com", "m.youtube.com", "music.youtube.com", "youtube-nocookie.com"];
 
 function parseVideoId(raw) {
     const input = raw.trim();
@@ -20,7 +21,7 @@ function parseVideoId(raw) {
         return VIDEO_ID.test(segments[0]) ? segments[0] : null;
     }
 
-    if (host === "youtube.com" || host === "m.youtube.com") {
+    if (YOUTUBE_HOSTS.includes(host)) {
         const v = url.searchParams.get("v");
         if (v && VIDEO_ID.test(v)) return v;
         if (PATH_PREFIXES.includes(segments[0]) && VIDEO_ID.test(segments[1])) {
@@ -85,6 +86,8 @@ const result = document.getElementById("result");
 const thumb = document.getElementById("thumb");
 const outId = document.getElementById("out-id");
 const outLink = document.getElementById("out-link");
+const charted = document.querySelectorAll(".charted");
+const notCharted = document.getElementById("not-charted");
 
 form.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -94,6 +97,8 @@ form.addEventListener("submit", (event) => {
         error.textContent = "That is not a YouTube video URL or an 11-character video ID.";
         error.hidden = false;
         result.hidden = true;
+        for (const el of charted) el.hidden = true;
+        notCharted.hidden = true;
         return;
     }
 
@@ -103,6 +108,12 @@ form.addEventListener("submit", (event) => {
     outId.textContent = id;
     outLink.textContent = watchUrl;
     outLink.href = watchUrl;
+
+    // The map and table describe one specific video; don't pass them off as
+    // results for any other link.
+    const isCharted = id === PLACES_VIDEO_ID;
+    for (const el of charted) el.hidden = !isCharted;
+    notCharted.hidden = isCharted;
 
     error.hidden = true;
     result.hidden = false;
