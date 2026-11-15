@@ -39,6 +39,27 @@
             </div>
         </section>
 
+        <section class="panel primary">
+            <form id="ig-form" action="instagram.html" method="get">
+                <label for="ig-address">Instagram address</label>
+                <div class="row">
+                    <input id="ig-address" name="ig" class="field" type="url" autocomplete="off" spellcheck="false"
+                           placeholder="Instagram address" required>
+                </div>
+                <label for="ig-place" class="spaced">Place name <span class="optional">(needed for posts, reels and profiles)</span></label>
+                <div class="row">
+                    <input id="ig-place" name="place" class="field" type="text" autocomplete="off"
+                           placeholder="e.g. Louvre Museum">
+                </div>
+                <label for="ig-hotel" class="spaced">Hotel name or address</label>
+                <div class="row">
+                    <input id="ig-hotel" name="hotel" class="field" type="text" autocomplete="off"
+                           placeholder="e.g. Hotel Lutetia, Paris" required>
+                    <button type="submit">Plot on map</button>
+                </div>
+            </form>
+        </section>
+
         <section id="not-charted" class="panel caution" hidden>
             <h2>This video hasn't been charted</h2>
             <p>The map and places table are built ahead of time for one video:

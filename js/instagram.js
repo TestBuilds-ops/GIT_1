@@ -128,7 +128,18 @@ function save() {
     }
 }
 
+// The homepage's Instagram form arrives here as ?ig=…&place=…&hotel=…; those
+// values replace whatever was saved, and the map is plotted straight away.
 function restore() {
+    const params = new URLSearchParams(location.search);
+    if (params.has("ig") || params.has("hotel")) {
+        hotelInput.value = params.get("hotel") || "";
+        appendRow(params.get("ig") || "", params.get("place") || "");
+        history.replaceState(null, "", location.pathname);
+        save();
+        return true;
+    }
+
     let saved = null;
     try {
         saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
@@ -138,6 +149,7 @@ function restore() {
     hotelInput.value = saved?.hotel || "";
     const links = saved?.links?.length ? saved.links : [{ url: "", place: "" }];
     for (const link of links) appendRow(link.url, link.place);
+    return false;
 }
 
 addRow.addEventListener("click", () => {
@@ -343,4 +355,4 @@ form.addEventListener("submit", async (event) => {
     }
 });
 
-restore();
+if (restore()) form.requestSubmit();

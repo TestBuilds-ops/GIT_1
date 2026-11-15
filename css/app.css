@@ -103,6 +103,26 @@ label {
     color: var(--depth);
 }
 
+.field {
+    flex: 1 1 240px;
+    min-width: 0;
+    padding: 11px 13px;
+    font: 400 14px/1.4 "IBM Plex Mono", ui-monospace, monospace;
+    color: var(--ink);
+    background: var(--sea);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+}
+
+.field:focus-visible {
+    outline: 2px solid var(--magenta);
+    outline-offset: 1px;
+    border-color: transparent;
+}
+
+label.spaced { margin-top: 18px; }
+label .optional { text-transform: none; letter-spacing: 0; font-family: Archivo, system-ui, sans-serif; }
+
 .row { display: flex; gap: 8px; flex-wrap: wrap; }
 
 #video-url {
