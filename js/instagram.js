@@ -288,6 +288,22 @@ let centreBar = null;
 let plotted = { hotels: [], places: [] };
 let activeHotel = 0;
 
+const tripPanel = document.getElementById("trip-panel");
+const tripHotel = document.getElementById("trip-hotel");
+const tripReturn = document.getElementById("trip-return");
+const tripStops = document.getElementById("trip-stops");
+const tripPlot = document.getElementById("trip-plot");
+const tripClear = document.getElementById("trip-clear");
+const tripStatus = document.getElementById("trip-status");
+const tripSummary = document.getElementById("trip-summary");
+const tripBody = document.getElementById("trip-body");
+const tripCaption = document.getElementById("trip-caption");
+// What the trip panel holds: the hotel, the attractions in the order they
+// were ticked (by name, so a re-plot keeps them), and whether a trip is shown.
+const tripChoice = { hotel: 0, order: [], back: true, shown: false };
+// The trip currently drawn: { hotel, stops, legs }, or null for all places.
+let trip = null;
+
 function ensureMap() {
     if (map) return;
     map = L.map("map", { scrollWheelZoom: false, zoomSnap: 0.5 });
@@ -312,6 +328,16 @@ function ensureMap() {
 // One "Centre on" button per hotel; the pressed one owns the map's extent.
 function drawCentreButtons() {
     centreBar.replaceChildren();
+    if (trip) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "recentre";
+        button.textContent = "Centre on " + (plotted.hotels.length > 1 ? trip.hotel.label : "hotel");
+        button.setAttribute("aria-pressed", "true");
+        button.addEventListener("click", frameOnHotel);
+        centreBar.appendChild(button);
+        return;
+    }
     plotted.hotels.forEach((hotel, i) => {
         const button = document.createElement("button");
         button.type = "button";
@@ -331,11 +357,13 @@ function drawCentreButtons() {
 // far enough that its places (and their driving routes) fit. A box mirrored
 // around the hotel gives the zoom.
 function frameOnHotel() {
-    const hotel = plotted.hotels[activeHotel];
+    const hotel = trip ? trip.hotel : plotted.hotels[activeHotel];
     if (!map || !hotel) return;
-    const points = plotted.places
-        .filter((p) => p.point && p.hotel === hotel)
-        .flatMap((p) => (p.route ? p.route.line : [[p.point.lat, p.point.lon]]));
+    const points = trip
+        ? trip.legs.flatMap((leg) => leg.line)
+        : plotted.places
+            .filter((p) => p.point && p.hotel === hotel)
+            .flatMap((p) => (p.route ? p.route.line : [[p.point.lat, p.point.lon]]));
     if (!points.length) {
         map.setView([hotel.lat, hotel.lon], 15);
         return;
@@ -375,9 +403,60 @@ function legDetail(place) {
     return parts.join(" · ");
 }
 
+function hotelMarker(hotel) {
+    L.marker([hotel.lat, hotel.lon], {
+        icon: pinIcon("hotel", hotel.badge),
+        zIndexOffset: 1000,
+        title: hotel.name
+    }).bindPopup(popupContent(hotel.label + ": " + hotel.name, hotel.address)).addTo(layer);
+}
+
+// Draws either every place with its route from its nearest hotel, or, when a
+// trip is plotted, only that hotel and the ticked stops joined leg by leg.
+function drawMap() {
+    layer.clearLayers();
+    if (trip) {
+        hotelMarker(trip.hotel);
+        for (const leg of trip.legs) {
+            L.polyline(leg.line, {
+                className: leg.route ? "route" : "spoke",
+                color: leg.color,
+                interactive: false
+            }).addTo(layer);
+        }
+        trip.stops.forEach((place, i) => {
+            const leg = trip.legs[i];
+            const detail = "Stop " + (i + 1) + " · " +
+                (leg.route ? formatDistance(leg.route.km) + ", about " + formatDuration(leg.route.seconds) +
+                 " from " + leg.fromName : "no road route from " + leg.fromName);
+            L.marker([place.point.lat, place.point.lon], {
+                icon: pinIcon("place", String(i + 1), place.color),
+                title: place.name
+            }).bindPopup(popupContent(place.name, detail)).addTo(layer);
+        });
+    } else {
+        plotted.hotels.forEach(hotelMarker);
+        for (const place of plotted.places.filter((p) => p.point)) {
+            const line = place.route
+                ? place.route.line
+                : [[place.hotel.lat, place.hotel.lon], [place.point.lat, place.point.lon]];
+            L.polyline(line, {
+                className: place.route ? "route" : "spoke",
+                color: place.color,
+                interactive: false
+            }).addTo(layer);
+            L.marker([place.point.lat, place.point.lon], {
+                icon: pinIcon("place", String(place.number), place.color),
+                title: place.name
+            }).bindPopup(popupContent(place.number + ". " + place.name, legDetail(place))).addTo(layer);
+        }
+    }
+    drawCentreButtons();
+    frameOnHotel();
+}
+
 function render(hotels, places) {
     ensureMap();
-    layer.clearLayers();
     plotted = { hotels, places };
     if (activeHotel >= hotels.length) activeHotel = 0;
     // Open on a hotel that has places around it, rather than an empty one.
@@ -385,29 +464,6 @@ function render(hotels, places) {
     if (!hasPlaces(hotels[activeHotel])) {
         const withPlaces = hotels.findIndex(hasPlaces);
         if (withPlaces !== -1) activeHotel = withPlaces;
-    }
-
-    for (const hotel of hotels) {
-        L.marker([hotel.lat, hotel.lon], {
-            icon: pinIcon("hotel", hotel.badge),
-            zIndexOffset: 1000,
-            title: hotel.name
-        }).bindPopup(popupContent(hotel.label + ": " + hotel.name, hotel.address)).addTo(layer);
-    }
-
-    for (const place of places.filter((p) => p.point)) {
-        const line = place.route
-            ? place.route.line
-            : [[place.hotel.lat, place.hotel.lon], [place.point.lat, place.point.lon]];
-        L.polyline(line, {
-            className: place.route ? "route" : "spoke",
-            color: place.color,
-            interactive: false
-        }).addTo(layer);
-        L.marker([place.point.lat, place.point.lon], {
-            icon: pinIcon("place", String(place.number), place.color),
-            title: place.name
-        }).bindPopup(popupContent(place.number + ". " + place.name, legDetail(place))).addTo(layer);
     }
 
     tbody.replaceChildren();
@@ -441,7 +497,7 @@ function render(hotels, places) {
         } else {
             source.textContent = place.kind;
         }
-        add(place.point ? place.hotel.label : "—", "cell-coord");
+        add(place.point ? (hotels.length > 1 ? place.hotel.label : "Hotel") : "—", "cell-coord");
         add(place.route ? formatDistance(place.route.km) : "—", "cell-coord");
         add(place.route ? formatDuration(place.route.seconds) : place.point ? "No road route" : "—", "cell-coord");
         add(place.point ? formatDistance(place.km) : "—", "cell-coord");
@@ -454,9 +510,184 @@ function render(hotels, places) {
 
     mapPanel.hidden = false;
     tablePanel.hidden = false;
-    drawCentreButtons();
     map.invalidateSize();
-    frameOnHotel();
+    buildTripPanel();
+    trip = null;
+    drawMap();
+    // A trip that was on show is replotted with the new order or colours.
+    if (tripChoice.shown) plotTrip();
+}
+
+function locatedPlaces() {
+    return plotted.places.filter((p) => p.point);
+}
+
+function buildTripPanel() {
+    const located = locatedPlaces();
+    tripPanel.hidden = !located.length;
+    if (tripChoice.hotel >= plotted.hotels.length) tripChoice.hotel = 0;
+    const names = new Set(located.map((p) => p.name));
+    tripChoice.order = tripChoice.order.filter((name) => names.has(name));
+
+    tripHotel.replaceChildren(...plotted.hotels.map((hotel, i) => {
+        const option = document.createElement("option");
+        option.value = String(i);
+        option.textContent = (plotted.hotels.length > 1 ? hotel.label + ": " : "") + hotel.name;
+        return option;
+    }));
+    tripHotel.value = String(tripChoice.hotel);
+    tripReturn.checked = tripChoice.back;
+    drawTripStops();
+}
+
+function drawTripStops() {
+    const hotel = plotted.hotels[tripChoice.hotel];
+    tripStops.replaceChildren(...locatedPlaces().map((place) => {
+        const item = document.createElement("li");
+        const label = document.createElement("label");
+        const box = document.createElement("input");
+        box.type = "checkbox";
+        box.checked = tripChoice.order.includes(place.name);
+        box.addEventListener("change", () => {
+            tripChoice.order = tripChoice.order.filter((name) => name !== place.name);
+            if (box.checked) tripChoice.order.push(place.name);
+            drawTripStops();
+            tripStops.querySelectorAll("input")[locatedPlaces().indexOf(place)].focus();
+        });
+        const order = document.createElement("span");
+        order.className = "stop-order";
+        const at = tripChoice.order.indexOf(place.name);
+        order.textContent = at === -1 ? "" : String(at + 1);
+        if (at !== -1) {
+            order.style.background = place.color;
+            order.style.color = textOn(place.color);
+        }
+        const name = document.createElement("span");
+        name.textContent = place.name;
+        const meta = document.createElement("span");
+        meta.className = "stop-meta";
+        meta.textContent = formatDistance(distanceKm(hotel, place.point)) + " from " +
+            (plotted.hotels.length > 1 ? hotel.badge : "hotel");
+        label.append(box, order, name, meta);
+        item.appendChild(label);
+        return item;
+    }));
+    tripPlot.disabled = !tripChoice.order.length;
+}
+
+tripHotel.addEventListener("change", () => {
+    tripChoice.hotel = Number(tripHotel.value);
+    drawTripStops();
+});
+tripReturn.addEventListener("change", () => {
+    tripChoice.back = tripReturn.checked;
+});
+document.getElementById("trip-all").addEventListener("click", () => {
+    tripChoice.order = locatedPlaces().map((p) => p.name);
+    drawTripStops();
+});
+document.getElementById("trip-none").addEventListener("click", () => {
+    tripChoice.order = [];
+    drawTripStops();
+});
+tripPlot.addEventListener("click", () => {
+    tripChoice.shown = true;
+    plotTrip(true);
+});
+tripClear.addEventListener("click", () => {
+    tripChoice.shown = false;
+    trip = null;
+    tripSummary.hidden = true;
+    tripClear.hidden = true;
+    drawMap();
+});
+
+// Hotel → first ticked stop → … → last stop (→ hotel), each leg routed by
+// road. Legs are cached, so changing the order only fetches new pairs.
+async function plotTrip(scroll = false) {
+    const hotel = plotted.hotels[tripChoice.hotel];
+    const byName = new Map(locatedPlaces().map((p) => [p.name, p]));
+    const stops = tripChoice.order.map((name) => byName.get(name)).filter(Boolean);
+    if (!hotel || !stops.length) return;
+
+    const waypoints = [{ ...hotel, title: hotel.name }, ...stops.map((p) => ({ ...p.point, title: p.name, color: p.color }))];
+    if (tripChoice.back) waypoints.push({ ...hotel, title: hotel.name, color: "#14282f" });
+
+    tripPlot.disabled = true;
+    const legs = [];
+    let noRouter = false;
+    try {
+        for (let i = 1; i < waypoints.length; i++) {
+            const from = waypoints[i - 1];
+            const to = waypoints[i];
+            tripStatus.textContent = "Routing leg " + i + " of " + (waypoints.length - 1) + "…";
+            let route = null;
+            try {
+                route = await drivingRoute(from, to);
+            } catch {
+                noRouter = true;
+            }
+            legs.push({
+                fromName: from.title,
+                toName: to.title,
+                color: to.color,
+                route,
+                line: route ? route.line : [[from.lat, from.lon], [to.lat, to.lon]]
+            });
+        }
+    } finally {
+        tripStatus.textContent = noRouter ? "Some legs couldn't be routed; they're drawn as straight lines." : "";
+        tripPlot.disabled = false;
+    }
+
+    trip = { hotel, stops, legs };
+    drawTripTable(legs);
+    tripClear.hidden = false;
+    drawMap();
+    if (scroll) mapPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function drawTripTable(legs) {
+    tripBody.replaceChildren();
+    let km = 0;
+    let seconds = 0;
+    let complete = true;
+    legs.forEach((leg, i) => {
+        const row = document.createElement("tr");
+        if (leg.route) {
+            km += leg.route.km;
+            seconds += leg.route.seconds;
+        } else {
+            complete = false;
+        }
+        const cells = [
+            String(i + 1),
+            leg.fromName,
+            leg.toName,
+            leg.route ? formatDistance(leg.route.km) : "No road route",
+            leg.route ? formatDuration(leg.route.seconds) : "—",
+            leg.route ? formatDistance(km) + " · " + formatDuration(seconds) : "—"
+        ];
+        cells.forEach((text, c) => {
+            const cell = document.createElement("td");
+            cell.textContent = text;
+            cell.className = c === 0 || c > 2 ? "cell-coord" : c === 2 ? "cell-name" : "";
+            row.appendChild(cell);
+        });
+        tripBody.appendChild(row);
+    });
+    const total = document.createElement("tr");
+    total.className = "total";
+    for (const text of ["", "Total driving", "", formatDistance(km), formatDuration(seconds), complete ? "" : "excludes unrouted legs"]) {
+        const cell = document.createElement("td");
+        cell.textContent = text;
+        cell.className = "cell-coord";
+        total.appendChild(cell);
+    }
+    tripBody.appendChild(total);
+    tripCaption.textContent = legs.length + " legs by road, in the order the attractions were ticked. " +
+        "Drive times assume normal road speeds, with no live traffic or time spent at each stop.";
+    tripSummary.hidden = false;
 }
 
 function showError(message) {

@@ -44,6 +44,49 @@
             </form>
         </section>
 
+        <section class="panel" id="trip-panel" hidden>
+            <div class="legend">
+                <h2>Trip</h2>
+                <span>plot a route from one hotel through the attractions you pick, in the order you pick them</span>
+            </div>
+            <div class="trip-grid">
+                <div>
+                    <label for="trip-hotel">Start from</label>
+                    <select id="trip-hotel" class="field"></select>
+                    <label class="check">
+                        <input type="checkbox" id="trip-return" checked> Return to the hotel at the end
+                    </label>
+                </div>
+                <fieldset class="trip-pick">
+                    <legend>Tick attractions in visiting order</legend>
+                    <ul id="trip-stops" class="trip-stops"></ul>
+                    <button type="button" id="trip-all" class="ghost small">Tick all in list order</button>
+                    <button type="button" id="trip-none" class="ghost small">Clear ticks</button>
+                </fieldset>
+            </div>
+            <div class="row actions">
+                <button type="button" id="trip-plot">Plot trip</button>
+                <button type="button" id="trip-clear" class="ghost" hidden>Show all places again</button>
+                <p id="trip-status" class="status" role="status"></p>
+            </div>
+            <div id="trip-summary" class="scroller" hidden>
+                <table>
+                    <caption id="trip-caption"></caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Leg</th>
+                            <th scope="col">From</th>
+                            <th scope="col">To</th>
+                            <th scope="col">Driving</th>
+                            <th scope="col">Drive time</th>
+                            <th scope="col">Running total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="trip-body"></tbody>
+                </table>
+            </div>
+        </section>
+
         <section class="panel" id="map-panel" hidden>
             <div class="legend">
                 <h2>Map</h2>
