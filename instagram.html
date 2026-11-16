@@ -21,17 +21,18 @@
 
         <section class="panel primary">
             <form id="stay-form" novalidate>
-                <label for="hotel">Hotel name or address</label>
-                <div class="row">
-                    <input id="hotel" class="field" type="text" autocomplete="off"
-                           placeholder="e.g. Hotel Lutetia, Paris">
-                </div>
+                <fieldset class="links">
+                    <legend>Hotel</legend>
+                    <p class="hint">Staying in more than one place? Add each hotel; every attraction is measured from the hotel it's nearest to.</p>
+                    <ol id="hotel-rows" class="rows"></ol>
+                    <button type="button" id="add-hotel" class="ghost">+ Add another hotel</button>
+                </fieldset>
 
                 <fieldset class="links">
                     <legend>Instagram address</legend>
                     <p class="hint">A location address (<code>instagram.com/explore/locations/&hellip;</code>) names its place by itself.
                        A post, reel or profile address doesn't carry a location, so type the place it shows.</p>
-                    <ol id="link-rows"></ol>
+                    <ol id="link-rows" class="rows"></ol>
                     <button type="button" id="add-row" class="ghost">+ Add another Instagram address</button>
                 </fieldset>
 
@@ -46,29 +47,33 @@
         <section class="panel" id="map-panel" hidden>
             <div class="legend">
                 <h2>Map</h2>
-                <span>always centred on the hotel</span>
+                <span>always centred on a hotel; lines follow the driving route</span>
             </div>
             <div id="map" class="map" role="region" aria-label="Map of the hotel and Instagram places"></div>
             <ul class="key">
                 <li><i class="hotel-key"></i> Hotel</li>
-                <li><i class="solid"></i> Place from an Instagram address (numbered as listed)</li>
+                <li><i class="solid"></i> Place, in your chosen colour and order</li>
+                <li><i class="route-key"></i> Driving route from its hotel</li>
             </ul>
         </section>
 
         <section class="panel" id="table-panel" hidden>
             <div class="legend">
                 <h2>Places</h2>
-                <span>distance is straight-line from the hotel</span>
+                <span>driving distance and time by road from the nearest hotel</span>
             </div>
             <div class="scroller">
                 <table>
-                    <caption>Addresses and coordinates resolved through OpenStreetMap's Nominatim geocoder.</caption>
+                    <caption>Addresses from OpenStreetMap's Nominatim geocoder; driving routes from OSRM on OpenStreetMap roads. Drive times assume normal road speeds, with no live traffic.</caption>
                     <thead>
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Place</th>
                             <th scope="col">Instagram address</th>
-                            <th scope="col">From hotel</th>
+                            <th scope="col">From</th>
+                            <th scope="col">Driving</th>
+                            <th scope="col">Drive time</th>
+                            <th scope="col">Straight line</th>
                             <th scope="col">Geocoded address</th>
                         </tr>
                     </thead>
@@ -78,12 +83,27 @@
         </section>
     </main>
 
+    <template id="hotel-template">
+        <li class="link-row">
+            <span class="badge hotel-badge" aria-hidden="true">H</span>
+            <input class="field hotel-name" type="text" autocomplete="off"
+                   placeholder="Hotel name or address, e.g. Hotel Lutetia, Paris">
+            <button type="button" class="ghost remove" aria-label="Remove this hotel">&times;</button>
+        </li>
+    </template>
+
     <template id="row-template">
         <li class="link-row">
+            <span class="badge" aria-hidden="true">1</span>
+            <input class="ig-color" type="color" title="Pin colour">
             <input class="field ig-url" type="url" autocomplete="off" spellcheck="false"
                    placeholder="Instagram address" aria-label="Instagram address">
             <input class="field ig-place" type="text" autocomplete="off"
                    placeholder="Place name (needed for posts and reels)" aria-label="Place name">
+            <span class="order">
+                <button type="button" class="ghost move-up" aria-label="Move up">&uarr;</button>
+                <button type="button" class="ghost move-down" aria-label="Move down">&darr;</button>
+            </span>
             <button type="button" class="ghost remove" aria-label="Remove this Instagram address">&times;</button>
         </li>
     </template>

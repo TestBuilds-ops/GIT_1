@@ -10,10 +10,43 @@
 .hint { max-width: 66ch; margin-bottom: 12px; font-size: 13px; color: var(--depth); }
 .hint code { font: 400 12px "IBM Plex Mono", ui-monospace, monospace; overflow-wrap: anywhere; }
 
-#link-rows { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
-.link-row { display: flex; gap: 8px; flex-wrap: wrap; }
-.link-row .ig-url { flex: 2 1 260px; }
-.link-row .ig-place { flex: 1 1 200px; }
+.links + .links { margin-top: 18px; }
+.rows { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
+.link-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.link-row .ig-url { flex: 2 1 180px; }
+.link-row .ig-place { flex: 1 1 120px; }
+.link-row .hotel-name { flex: 1 1 140px; }
+
+.badge {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    font: 600 11px/1 "IBM Plex Mono", ui-monospace, monospace;
+    color: var(--depth);
+    border: 1px solid var(--line);
+}
+.hotel-badge { border-radius: 5px; background: #14282f; color: #fff; border: 2px solid var(--amber); }
+
+.ig-color {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    padding: 3px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    cursor: pointer;
+}
+.ig-color::-webkit-color-swatch-wrapper { padding: 0; }
+.ig-color::-webkit-color-swatch { border: 0; border-radius: 50%; }
+.ig-color::-moz-color-swatch { border: 0; border-radius: 50%; }
+
+.order { display: flex; gap: 4px; }
+.order button { padding: 9px 12px; }
+.order button:disabled { opacity: 0.35; cursor: default; }
 
 button.ghost {
     color: var(--magenta);
@@ -45,12 +78,15 @@ button:disabled { opacity: 0.55; cursor: progress; }
     font: 600 12px/1 "IBM Plex Mono", ui-monospace, monospace;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
-.pin-icon.place span { background: var(--magenta); color: var(--on-magenta); border: 2px solid #fff; }
+.pin-icon.place span { border: 2px solid #fff; }
 .pin-icon.hotel span { background: #14282f; color: #fff; border: 3px solid var(--amber); border-radius: 6px; }
 
-.spoke { stroke: var(--magenta); stroke-width: 1.5; stroke-dasharray: 5 5; opacity: 0.6; }
+.spoke { stroke-width: 1.5; stroke-dasharray: 5 5; opacity: 0.7; }
+.route { stroke-width: 4; opacity: 0.75; }
 
 .leaflet-container { font: 400 13px/1.4 Archivo, system-ui, sans-serif; }
+.centre-bar { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.recentre[aria-pressed="true"] { border-color: var(--amber); }
 .recentre {
     padding: 7px 11px;
     font: 600 12px/1 Archivo, system-ui, sans-serif;
@@ -60,6 +96,16 @@ button:disabled { opacity: 0.55; cursor: progress; }
     border-radius: 4px;
 }
 
+.key .route-key { width: 18px; height: 0; border-top: 4px solid var(--magenta); border-radius: 0; opacity: 0.75; }
+.swatch {
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 600;
+}
 .key .hotel-key { background: #14282f; border: 2px solid var(--amber); border-radius: 3px; }
 .key { flex-direction: row; flex-wrap: wrap; gap: 7px 20px; }
 
