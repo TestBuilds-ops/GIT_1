@@ -3,8 +3,10 @@ const MEDIA_SEGMENTS = { p: "post", reel: "reel", reels: "reel", tv: "video" };
 const NOMINATIM = "https://nominatim.openstreetmap.org/search";
 // Nominatim's usage policy allows at most one request per second.
 const GEOCODE_GAP_MS = 1100;
-// How far around the hotel (in degrees) to prefer matches for a place name.
-const NEARBY_DEGREES = 0.3;
+// Places are searched for inside this box around the hotel (in degrees, about
+// 55 km), and a match from anywhere else is kept only within MAX_PLACE_KM.
+const NEARBY_DEGREES = 0.5;
+const MAX_PLACE_KM = 150;
 const STORAGE_KEY = "stay-map-inputs";
 
 // Turns an Instagram link into what it tells us about a place. Location links
@@ -49,11 +51,16 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const geocodeCache = new Map();
 let lastGeocodeAt = 0;
 
+function looksLikeWebAddress(text) {
+    return /:\/\/|^www\.|instagram\.com|instagr\.am/i.test(text);
+}
+
 async function geocode(query, near) {
     const params = new URLSearchParams({ q: query, format: "jsonv2", limit: "1" });
     if (near) {
         const d = NEARBY_DEGREES;
         params.set("viewbox", [near.lon - d, near.lat + d, near.lon + d, near.lat - d].join(","));
+        params.set("bounded", "1");
     }
     const key = params.toString();
     if (geocodeCache.has(key)) return geocodeCache.get(key);
@@ -70,6 +77,27 @@ async function geocode(query, near) {
         : null;
     geocodeCache.set(key, result);
     return result;
+}
+
+// Finds an attraction near the hotel. Names are tried as typed, with
+// Centre/Center swapped, and without words that just repeat the hotel's city
+// (the search box already covers it). A match outside the box only counts if
+// it is still within MAX_PLACE_KM, so a same-named place abroad is never used.
+async function findNear(name, hotel) {
+    const hotelParts = new Set(hotel.address.toLowerCase().split(/,\s*/));
+    const variants = [
+        name,
+        name.replace(/\bcentre\b/gi, "Center").replace(/\btheatre\b/gi, "Theater"),
+        name.replace(/\bcenter\b/gi, "Centre").replace(/\btheater\b/gi, "Theatre"),
+        name.split(/\s+/).filter((w) => !hotelParts.has(w.toLowerCase().replace(/[,.]/g, ""))).join(" ")
+    ];
+    for (const variant of [...new Set(variants)]) {
+        if (!variant.trim()) continue;
+        const hit = await geocode(variant, hotel);
+        if (hit) return hit;
+    }
+    const anywhere = await geocode(name);
+    return anywhere && distanceKm(hotel, anywhere) <= MAX_PLACE_KM ? anywhere : null;
 }
 
 function distanceKm(a, b) {
@@ -262,11 +290,14 @@ function render(hotel, places) {
             place.name,
             null,
             place.point ? formatDistance(place.km) : "—",
-            place.point ? place.point.address : "Not found — try a more specific place name"
+            place.point ? place.point.address
+                : "Not found within " + MAX_PLACE_KM + " km of the hotel — check the spelling or try the local name"
         ];
         cells.forEach((text, i) => {
             const cell = document.createElement("td");
-            if (i === 2) {
+            if (i === 2 && !place.href) {
+                cell.textContent = "typed";
+            } else if (i === 2) {
                 const link = document.createElement("a");
                 link.href = place.href;
                 link.target = "_blank";
@@ -304,17 +335,35 @@ form.addEventListener("submit", async (event) => {
         hotelInput.focus();
         return;
     }
+    if (looksLikeWebAddress(inputs.hotel)) {
+        showError("The hotel box needs the hotel's name or street address, not a web address.");
+        hotelInput.focus();
+        return;
+    }
 
     const places = [];
     const problems = [];
     inputs.links.forEach((link, i) => {
-        if (!link.url && !link.place) return;
-        const parsed = parseInstagram(link.url);
+        let { url, place } = link;
+        if (!url && !place) return;
+        // Pasting the link into the place box is an easy slip; move it across.
+        if (!url && looksLikeWebAddress(place)) [url, place] = [place, ""];
+        if (looksLikeWebAddress(place)) {
+            problems.push("Place name " + (i + 1) + " is a web address. Type the attraction's name instead, " +
+                "e.g. “Longgang International Arts Centre”.");
+            return;
+        }
+        // An attraction typed straight into the Instagram box is plotted as typed.
+        if (url && !looksLikeWebAddress(url) && !place) {
+            places.push({ number: places.length + 1, name: url, kind: "typed", href: null });
+            return;
+        }
+        const parsed = parseInstagram(url);
         if (!parsed) {
             problems.push("Instagram address " + (i + 1) + " isn't a post, reel, profile or location address.");
             return;
         }
-        const name = link.place || parsed.place;
+        const name = place || parsed.place;
         if (!name) {
             problems.push("Instagram address " + (i + 1) + " is a " + parsed.kind +
                 ", which doesn't say where it is. Type the place name next to it.");
@@ -340,7 +389,7 @@ form.addEventListener("submit", async (event) => {
 
         for (const place of places) {
             statusLine.textContent = "Finding " + place.name + " (" + place.number + " of " + places.length + ")…";
-            place.point = await geocode(place.name, hotel);
+            place.point = await findNear(place.name, hotel);
             if (place.point) place.km = distanceKm(hotel, place.point);
         }
 
